@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .App {
   text-align: center;
 }
@@ -36,3 +37,25 @@
     transform: rotate(360deg);
   }
 }
+=======
+/* src/App.css */
+
+.App {
+  display: flex;
+}
+
+.main-content {
+  width: calc(100vw - 5vw);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #cbcbcb;
+  position: absolute;
+  right: 0;
+}
+
+.content {
+  height: 100vh;
+  margin: 120px 0 0 90px;
+}
+>>>>>>> f8613230c377fb6b660164010802e88ac099a0c7

@@ -1,0 +1,57 @@
+.sidebar {
+  height: 100vh;
+  width: 5vw;
+  min-width: 1vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: fixed;
+  background-color: #0BA574;
+}
+
+.logoContainer {
+  width: calc(5vw + 3px);
+  min-width: 120px;
+  height: 10vh;
+  min-height: 40px;
+  padding-top: calc(2vh);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.logoImg {
+  height: 100%;
+  width: 90%;
+  margin-bottom: calc(0.0vh);
+  object-fit: contain;
+}
+
+.divider {
+  top: 0;
+  width: 60%;
+  border: 0;
+  border-top: 1px solid #ccc;
+}
+
+.menu {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.bottomIcons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+  bottom: calc(2vh);
+}
+
+.icon {
+  font-size: calc(1vw + 1vh);
+  margin: calc(2vh) 0;
+  color: white;
+  cursor: pointer;
+}
