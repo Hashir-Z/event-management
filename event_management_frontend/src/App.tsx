@@ -1,5 +1,6 @@
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
+import { AdminDashboard } from './components/AdminDashboard';
 import './App.css';
 
 function App() {
@@ -9,6 +10,7 @@ function App() {
       <div className="main-content">
         <Header />
         <div className="content">
+          <AdminDashboard />
         </div>
       </div>
     </div>
