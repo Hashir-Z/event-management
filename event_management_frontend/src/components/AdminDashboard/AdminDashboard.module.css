@@ -1,0 +1,141 @@
+.adminDashboard {
+    padding: 50px;
+    background-color: #ffffff;
+    font-family: Arial, sans-serif;
+    margin-left: -4.3%;
+}
+
+/* Navigation Tabs */
+.navbar {
+    display: flex;
+    gap: 40px;
+    margin-bottom: 20px;
+    font-size: 30px;
+    font-weight: bold;
+    padding: 20px;
+    background-color: white;
+    border-bottom: 2px solid #ddd;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Active Tab */
+.activeTab {
+    color: #0ba574;
+    border-bottom: 4px solid #0ba574;
+    padding-bottom: 5px;
+    cursor: pointer;
+}
+
+/* Inactive Tab */
+.inactiveTab {
+    color: #666;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.inactiveTab:hover {
+    color: #0ba574;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.filterButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.newEventButton {
+    background-color: #0ba574;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.newEventButton:hover {
+    background-color: #089963;
+}
+/* Overlay to darken background when popup appears */
+.popupOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Popup container */
+.popup {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    min-width: 300px;
+    text-align: center;
+}
+
+/* Close button */
+.closeButton {
+    margin-top: 10px;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.closeButton:hover {
+    background-color: #c0392b;
+}
+
+/* Events Table */
+.eventTable {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.eventTable th,
+.eventTable td {
+    text-align: left;
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+.eventTable th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+/* Hover Effect */
+.eventTable tr:hover {
+    background-color: #f9f9f9;
+}
+
+.eventTable tr:last-child td {
+    border-bottom: none;
+}
+
+/* Checkbox Styling */
+input[type="checkbox"] {
+    transform: scale(1.2);
+    margin: 0;
+}
