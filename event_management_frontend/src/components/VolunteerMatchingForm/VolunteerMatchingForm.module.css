@@ -1,0 +1,41 @@
+.VolunteerMatchingForm {
+
+}
+.title{
+    background-color: white;
+    font-size:xx-large;
+    width: 90%;
+    padding-left: 1rem;
+    padding: 1%;
+    margin-bottom: 3rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.form{
+    width: 50%;
+  margin: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+}
+.form input, 
+.form select, 
+.form textarea {
+    width: 100%;
+    padding: 8px;
+    margin: 8px 0;
+}
+
+.form button {
+    background-color: #0BA574;
+    color: white;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+}
+.required{
+    color: red;
+}

@@ -1,0 +1,42 @@
+.VolunteerHistory {
+    
+}
+.title{
+    background-color: white;
+    font-size:xx-large;
+    width: 90%;
+    padding-left: 1rem;
+    padding: 1%;
+    margin-bottom: 3rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.VolunteerHisDis{
+    width: 90%;
+    border-collapse: collapse;
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-spacing:0px;
+
+}
+.VolunteerHisDis th,
+.VolunteerHisDis td{
+    text-align: left;
+    padding: 1rem;
+    border-bottom: 1px solid #ddd;
+
+}
+.VolunteerHisDis th{
+    background-color: #f9f9f9;
+    padding-right: 4rem;
+    border-bottom: 1px solid #ddd;
+
+}
+.VolunteerHistoryInfo{
+
+}
+.VolunteerHistoryTable tr:hover{
+    background-color: #f9f9f9;
+}
