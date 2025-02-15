@@ -1,17 +1,26 @@
 import React, { useState } from "react";
-import styles from "././VolunteerDashboard.module.css";
+import styles from "./VolunteerDashboard.module.css";
 import { FiFilter } from "react-icons/fi";
 
 export function VolunteerDashboard() {
   const [activeTab, setActiveTab] = useState("events"); // Track active tab
   const [showFilterPopup, setShowFilterPopup] = useState(false); // Popup state
-  {/*INFO for tables*/ }
-  {/*Events*/}
-  const [events] = useState([
-    { id: 1, name: "Event1", description: "small description", slotsFilled: "0/6" },
-    { id: 2, name: "Event2", description: "small description", slotsFilled: "0/6" },
-    { id: 3, name: "Event3 ", description: "small description", slotsFilled: "0/6" },
+  const [selectAll, setSelectAll] = useState(false); // State for select all checkbox
+  const [events, setEvents] = useState([
+    { id: 1, name: "Event1", description: "small description", slotsFilled: "0/6", checked: false },
+    { id: 2, name: "Event2", description: "small description", slotsFilled: "0/6", checked: false },
+    { id: 3, name: "Event3 ", description: "small description", slotsFilled: "0/6", checked: false },
   ]);
+
+  const handleSelectAllChange = () => {
+    const newSelectAll = !selectAll;
+    setSelectAll(newSelectAll);
+    setEvents(events.map(event => ({ ...event, checked: newSelectAll })));
+  };
+
+  const handleEventCheckboxChange = (id: number) => {
+    setEvents(events.map(event => event.id === id ? { ...event, checked: !event.checked } : event));
+  };
 
   return (
     <div className={styles.volunteerDashboard}>
@@ -32,8 +41,7 @@ export function VolunteerDashboard() {
         </button>
       </div>
 
-      
-       {/* Filter Popup */}
+      {/* Filter Popup */}
       {showFilterPopup && (
         <div className={styles.popupOverlay} onClick={() => setShowFilterPopup(false)}>
           <div className={styles.popup} onClick={(e) => e.stopPropagation()}>
@@ -52,7 +60,7 @@ export function VolunteerDashboard() {
           <thead>
             <tr>
               <th>
-                <input type="checkbox" />
+                <input type="checkbox" checked={selectAll} onChange={handleSelectAllChange} />
               </th>
               <th>Event Name</th>
               <th>Description</th>
@@ -63,7 +71,11 @@ export function VolunteerDashboard() {
             {events.map((event) => (
               <tr key={event.id}>
                 <td>
-                  <input type="checkbox" />
+                  <input
+                    type="checkbox"
+                    checked={event.checked}
+                    onChange={() => handleEventCheckboxChange(event.id)}
+                  />
                 </td>
                 <td>{event.name}</td>
                 <td>{event.description}</td>
