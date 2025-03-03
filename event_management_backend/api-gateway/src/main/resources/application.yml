@@ -1,0 +1,39 @@
+server:
+  port: 8083
+
+application:
+  security:
+    jwt:
+      secret-key: c24bd868722684c9b9987b46aec79573b5ad1d199b7e606b7d4c5af82b3b99d7
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:4200"
+            allowCredentials: true
+            allowedHeaders: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+      routes:
+        - id: auth
+          uri: http://localhost:8081
+          predicates:
+            - Path=/auth/**
+
+        - id: metadata
+          uri: http://localhost:8084
+          predicates:
+            - Path=/metadata/**
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty.http.client: DEBUG
