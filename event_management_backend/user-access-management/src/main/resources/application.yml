@@ -1,0 +1,26 @@
+server:
+  port: 8085
+  error:
+    include-message: always
+
+spring:
+  application:
+    name: user-access-management
+
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:3307/event_management
+    username: root
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+    show-sql: true
+
+config:
+  okta:
+    user:
+      route: https://dev-82983698.okta.com/oauth2/default/v1/userinfo

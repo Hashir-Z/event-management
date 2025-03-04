@@ -1,0 +1,29 @@
+server:
+  port: 8081
+  error:
+    include-message: always
+
+spring:
+  application:
+    name: auth
+
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:3307/event_management
+    username: root
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+    show-sql: true
+
+application:
+  security:
+    jwt:
+      secret-key: c24bd868722684c9b9987b46aec79573b5ad1d199b7e606b7d4c5af82b3b99d7
+      expiration: 86400000 # 86400000 # a day
+      refresh-token:
+        expiration: 604800000 # 7 days

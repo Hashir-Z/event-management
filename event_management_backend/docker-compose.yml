@@ -1,0 +1,23 @@
+services:
+  mysql:
+    image: mysql:8.0.31
+    container_name: event_management_db
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_PASSWORD: password
+      MYSQL_DATABASE: event_management
+    ports:
+      - 3307:3306
+    volumes:
+      - mysql:/var/lib/mysql
+    networks:
+      - mysql
+    restart: unless-stopped
+
+networks:
+  mysql:
+    driver: bridge
+
+volumes:
+  mysql: {}

@@ -8,12 +8,22 @@
     <version>1.0-SNAPSHOT</version>
     <name>event_management_backend</name>
     <description>event_management_backend</description>
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.software</groupId>
+    <artifactId>event_management_backend</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>event_management_backend</name>
+    <description>event_management_backend</description>
     <packaging>pom</packaging>
     <modules>
         <module>api-gateway</module>
         <module>auth</module>
         <module>clients</module>
         <module>user-profile</module>
+        <module>common</module>
+        <module>user-access-management</module>
     </modules>
 
     <properties>
@@ -67,6 +77,10 @@
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
             <version>${org.mapstruct.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
         </dependency>
     </dependencies>
 

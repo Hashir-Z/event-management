@@ -1,4 +1,4 @@
-package com.software.auth;
+package com.software.useraccessmanagement;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -8,8 +8,7 @@ import org.springframework.context.annotation.PropertySources;
 
 @SpringBootApplication(
         scanBasePackages = {
-                "com.software.auth",
-                "com.software.auth.controller"
+                "com.software.useraccessmanagement",
         }
 )
 @EnableFeignClients(
@@ -18,9 +17,8 @@ import org.springframework.context.annotation.PropertySources;
 @PropertySources({
         @PropertySource("classpath:clients-${spring.profiles.active}.properties")
 })
-
-public class AuthApplication {
+public class UserAccessManagementApplication {
     public static void main(String[] args) {
-        SpringApplication.run(AuthApplication.class, args);
+        SpringApplication.run(UserAccessManagementApplication.class, args);
     }
 }
