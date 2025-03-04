@@ -67,7 +67,33 @@ export const VolunteerDetails: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form Submitted", formData);
+    const data = {
+      fullName: formData.fullName,
+      address1: formData.address1,
+      address2: formData.address2,
+      city: formData.city,
+      state: formData.state,
+      zipCode: formData.zipCode,
+      skills: formData.skills.map((skill) => skill.value), // Send only the value of the skills
+      preferences: formData.preferences,
+      availability: formData.availability,
+    };
+  
+    // Post data to the backend
+    fetch('http://localhost:8080/api/user-profiles/add', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data), // Send form data as JSON
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('Success:', data); // Handle success, possibly show a confirmation message
+      })
+      .catch((error) => {
+        console.error('Error:', error); // Handle error
+      });
   };
 
   return (
@@ -169,15 +195,23 @@ export const VolunteerDetails: React.FC = () => {
         <div className="form-group">
           <label>Availability (Multiple Dates, required)</label>
           <input
-            type="date"
-            name="availability"
-            value={formData.availability}
-            onChange={handleAvailabilityChange}
-            required
-          />
-          <button type="button" onClick={() => handleAvailabilityChange}>
-            Add Another Date
-          </button>
+    type="date"
+    name="availability"
+    value={formData.availability[formData.availability.length - 1] || ""}
+    onChange={handleAvailabilityChange}
+    required
+  />
+  <button
+    type="button"
+    onClick={() => {
+      setFormData({
+        ...formData,
+        availability: [...formData.availability, ''] // Add an empty date slot
+      });
+    }}
+  >
+    Add Another Date
+  </button>
         </div>
 
         <button type="submit" className="save-button">Save Profile</button>
