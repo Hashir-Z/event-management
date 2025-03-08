@@ -19,6 +19,7 @@
         <module>user-profile</module>
         <module>common</module>
         <module>user-access-management</module>
+        <module>event-management</module>
     </modules>
 
     <properties>

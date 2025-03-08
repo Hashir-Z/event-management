@@ -40,4 +40,10 @@ public class UserProfileService {
     public void clearUserProfiles() {
         userProfiles.clear();
     }
+
+    public UserProfile saveUserProfile(UserProfile userProfile) {
+        // add logic to save the user profile in a database
+        System.out.println("Saving user profile: " + userProfile);
+        return userProfile; // Return the saved profile for now
+    }
 }

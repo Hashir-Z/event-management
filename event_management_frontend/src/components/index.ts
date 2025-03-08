@@ -9,3 +9,4 @@ export {VolunteerHistory} from './VolunteerHistory';
 export {VolunteerMatchingForm} from './VolunteerMatchingForm';
 export {SignUp} from './SignUp';
 export {Homepage} from './Homepage';
+export {EditEventForm} from './EditEventForm';
