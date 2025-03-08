@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 @Getter
-@Setter(AccessLevel.PACKAGE)
+@Setter
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class EventManagementPrincipal implements EventManagementPrincipalReadOnly {
