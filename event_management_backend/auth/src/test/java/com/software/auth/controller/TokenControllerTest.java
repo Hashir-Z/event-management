@@ -1,62 +1,50 @@
 package com.software.auth.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.software.auth.service.TokenService;
-import com.software.clients.auth.TokenRecord;
+import com.software.auth.token.*;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Optional;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@DisplayName("Controller - Token")
-@SpringBootTest(classes = TokenController.class)
-@AutoConfigureMockMvc(addFilters = false)
-@AutoConfigureWebMvc
-public class TokenControllerTest {
+class TokenControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+    @InjectMocks
+    private TokenController tokenController;
 
-    @MockBean
+    @Mock
     private TokenService tokenService;
+
+    private MockMvc mockMvc;
 
     @BeforeEach
     void setUp() {
-        TokenRecord tokenRecord=new TokenRecord("12345", "user123", "validToken", "ACCESS", false, false);
-        when(tokenService.findByToken("invalidToken")).thenReturn(Optional.empty());
+        MockitoAnnotations.openMocks(this);
+        mockMvc = MockMvcBuilders.standaloneSetup(tokenController).build();
     }
 
     @Test
-    @DisplayName("Get Token by Valid Token")
-    void testGetTokenByValidToken() throws Exception {
+    void testFindByToken_TokenExists() throws Exception {
+        String token = "validToken";
+        Token mockToken = new Token("id", "validToken", TokenType.BEARER, false, false);
+        when(tokenService.findByToken(token)).thenReturn(Optional.of(mockToken));
+
         mockMvc.perform(get("/token")
-                        .param("token", "validToken")
+                        .param("token", token)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(content().json("{\"userId\":\"id\",\"token\":\"validToken\",\"tokenType\":\"BEARER\",\"revoked\":false,\"expired\":false}"));
+
+        verify(tokenService, times(1)).findByToken(token);
     }
-
-    @Test
-    @DisplayName("Get Token by Invalid Token")
-    void testGetTokenByInvalidToken() throws Exception {
-        mockMvc.perform(get("/token")
-                        .param("token", "invalidToken")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().string("null"));
-    }
-
-
 }

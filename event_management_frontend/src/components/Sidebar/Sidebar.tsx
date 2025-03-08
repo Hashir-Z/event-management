@@ -2,6 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSignOutAlt, faCog, faHome } from '@fortawesome/free-solid-svg-icons';
 import styles from './Sidebar.module.css';
+import AuthService from '../../services/AuthService';
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -20,13 +21,20 @@ export function Sidebar() {
     }
   };
 
-  const logout = () => {
+
+const logout = async () => {
+  try {
+    await AuthService.logout();
+
     if (type === "admin") {
       navigate("/login?type=admin");
     } else {
       navigate("/login?type=volunteer");
     }
-  };
+  } catch (error) {
+    console.error("Error during logout:", error);
+  }
+};
 
   return (
     <div className={styles.sidebar}>

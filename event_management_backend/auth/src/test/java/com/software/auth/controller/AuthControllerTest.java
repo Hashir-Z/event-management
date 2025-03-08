@@ -20,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Random;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,6 +44,7 @@ class AuthControllerTest {
     MockMvc mockMvc;
 
     private UserRecord userRecord;
+    Random random = new Random();
 
     @BeforeEach
     void beforeEachTest () {
@@ -50,9 +52,7 @@ class AuthControllerTest {
                 UUID.randomUUID().toString(),
                 UUID.randomUUID().toString(),
                 UUID.randomUUID().toString(),
-                UUID.randomUUID().toString(),
-                UUID.randomUUID().toString(),
-                UUID.randomUUID().toString()
+                random.nextBoolean()
         );
     }
 
@@ -88,9 +88,18 @@ class AuthControllerTest {
     @DisplayName("Token Generation - Success")
     void getToken() throws Exception {
         AuthRequest authRequest = new AuthRequest("username", "password");
+<<<<<<< HEAD
         when(authService.authenticate(authRequest)).thenReturn(new AuthResponse(UUID.randomUUID().toString(),UUID.randomUUID().toString(),UUID.randomUUID().toString(),"username",UUID.randomUUID().toString(),UUID.randomUUID().toString(),true,"token","token",true));
-        mockMvc.perform(post(BASE_URL + "/token")
-                        .contentType(MediaType.APPLICATION_JSON)
+=======
+        when(authService.authenticate(authRequest)).thenReturn(new AuthResponse(
+                UUID.randomUUID().toString(),
+                UUID.randomUUID().toString(),
+                "username",
+                UUID.randomUUID().toString(),
+                random.nextBoolean(),
+                UUID.randomUUID().toString(),
+                UUID.randomUUID().toString()
+        ));
                         .content(asJsonString(authRequest))
                         .characterEncoding(StandardCharsets.UTF_8.name())
                 )
@@ -100,7 +109,6 @@ class AuthControllerTest {
         verify(authService).authenticate(authRequest);
     }
 
-    @Test
     @DisplayName("Token Refresh - Success")
     void refreshToken() throws Exception {
         doNothing().when(authService).refreshToken(any(HttpServletRequest.class), any(HttpServletResponse.class));

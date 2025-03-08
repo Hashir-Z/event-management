@@ -1,75 +1,62 @@
 package com.software.auth.controller;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.software.clients.auth.JwtRecord;
+
 import com.software.auth.service.JwtService;
+import com.software.clients.auth.JwtRecord;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
-@DisplayName("Controller - Jwt")
-@SpringBootTest(classes = JwtController.class)
-@AutoConfigureMockMvc(addFilters = false)
-@AutoConfigureWebMvc
-public class JwtControllerTest {
+class JwtControllerTest {
 
-    private static final String BASE_URL = "/jwt";
+    @InjectMocks
+    private JwtController jwtController;
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @MockBean
+    @Mock
     private JwtService jwtService;
+
+    private MockMvc mockMvc;
 
     @BeforeEach
     void setUp() {
-        when(jwtService.isTokenValidated("validToken")).thenReturn(true);
-        when(jwtService.isTokenValidated("invalidToken")).thenReturn(false);
+        MockitoAnnotations.openMocks(this);
+        mockMvc = MockMvcBuilders.standaloneSetup(jwtController).build();
     }
 
     @Test
-    @DisplayName("Validate token - valid token")
-    void testValidateTokenWithValidToken() throws Exception {
+    void testValidateToken_ValidToken() throws Exception {
         JwtRecord jwtRecord = new JwtRecord("validToken");
+        when(jwtService.isTokenValidated(jwtRecord.token())).thenReturn(true);
 
-        mockMvc.perform(post(BASE_URL+ "/validate")
+        mockMvc.perform(post("/jwt/validate")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(jwtRecord)))
+                        .content("{\"token\":\"validToken\"}"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("true"));
+
+        verify(jwtService, times(1)).isTokenValidated("validToken");
     }
 
     @Test
-    @DisplayName("Validate token- invalid token")
-    void testValidateTokenWithInvalidToken() throws Exception {
+    void testValidateToken_InvalidToken() throws Exception {
         JwtRecord jwtRecord = new JwtRecord("invalidToken");
+        when(jwtService.isTokenValidated(jwtRecord.token())).thenReturn(false);
 
-        mockMvc.perform(post(BASE_URL+"/validate")
+        mockMvc.perform(post("/jwt/validate")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(jwtRecord)))
+                        .content("{\"token\":\"invalidToken\"}"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("false"));
-    }
-    protected byte[] asJsonString (final Object obj) {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            return mapper.writeValueAsBytes(obj);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+
+        verify(jwtService, times(1)).isTokenValidated("invalidToken");
     }
 }
-
