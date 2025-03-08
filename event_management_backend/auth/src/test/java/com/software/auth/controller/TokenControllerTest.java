@@ -1,7 +1,6 @@
 package com.software.auth.controller;
 
 import com.software.auth.service.TokenService;
-import com.software.clients.auth.TokenRecord;
 import com.software.auth.token.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
