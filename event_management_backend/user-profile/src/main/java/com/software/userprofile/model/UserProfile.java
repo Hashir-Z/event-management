@@ -15,6 +15,8 @@ public class UserProfile {
     private List<String> availability;
 
     // Constructors
+    public UserProfile() {}
+
     public UserProfile(String fullName, String address1, String address2, String city, String state, String zip,
                        List<String> skills, String preferences, List<String> availability) {
         this.fullName = fullName;

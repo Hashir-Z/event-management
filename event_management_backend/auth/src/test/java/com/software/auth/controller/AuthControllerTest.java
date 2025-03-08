@@ -88,6 +88,9 @@ class AuthControllerTest {
     @DisplayName("Token Generation - Success")
     void getToken() throws Exception {
         AuthRequest authRequest = new AuthRequest("username", "password");
+<<<<<<< HEAD
+        when(authService.authenticate(authRequest)).thenReturn(new AuthResponse(UUID.randomUUID().toString(),UUID.randomUUID().toString(),UUID.randomUUID().toString(),"username",UUID.randomUUID().toString(),UUID.randomUUID().toString(),true,"token","token",true));
+=======
         when(authService.authenticate(authRequest)).thenReturn(new AuthResponse(
                 UUID.randomUUID().toString(),
                 UUID.randomUUID().toString(),
@@ -97,8 +100,6 @@ class AuthControllerTest {
                 UUID.randomUUID().toString(),
                 UUID.randomUUID().toString()
         ));
-        mockMvc.perform(post(BASE_URL + "/token")
-                        .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(authRequest))
                         .characterEncoding(StandardCharsets.UTF_8.name())
                 )
@@ -108,7 +109,6 @@ class AuthControllerTest {
         verify(authService).authenticate(authRequest);
     }
 
-    @Test
     @DisplayName("Token Refresh - Success")
     void refreshToken() throws Exception {
         doNothing().when(authService).refreshToken(any(HttpServletRequest.class), any(HttpServletResponse.class));

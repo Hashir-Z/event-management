@@ -1,6 +1,5 @@
 package com.software.auth.service;
 
-
 import com.software.auth.dto.AuthRequest;
 import com.software.auth.dto.AuthResponse;
 import com.software.auth.dto.UserRecord;
@@ -8,18 +7,25 @@ import com.software.auth.repository.TokenRepository;
 import com.software.clients.uam.UserAccessManagementClient;
 import com.software.clients.uam.UserAccessManagementRequest;
 import com.software.clients.uam.UserDetailsRecord;
+<<<<<<< HEAD
+=======
+
 import jakarta.servlet.ServletOutputStream;
-import jakarta.servlet.WriteListener;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+>>>>>>> e77bd0dccef5ed2378c821de74ced3c16f80f8e4
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+<<<<<<< HEAD
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+=======
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
+>>>>>>> e77bd0dccef5ed2378c821de74ced3c16f80f8e4
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -35,8 +41,10 @@ import java.util.Random;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@SpringBootApplication
 @SpringBootTest(classes = AuthService.class)
-class AuthServiceTest {
+class AuthServiceTest
+{
 
     @Autowired
     private AuthService authService;
@@ -67,16 +75,18 @@ class AuthServiceTest {
     Random random = new Random();
 
     @BeforeEach
-    void setup() {
+    void setup()
+    {
         authRequest = new AuthRequest("username", "password");
         userDetails = new UserDetailsRecord("id", "fullName", "username", "password", "123", "123");
         userRecord = new UserRecord("fullName", "email.com", "password", random.nextBoolean());
     }
 
-    @Test
-    @DisplayName("Register User Details - Success")
-    void register() {
-        UserDetailsRecord userDetails1 = new UserDetailsRecord("id", userRecord.fullName(), userRecord.email(), userRecord.password(), "", "");
+    @Test @DisplayName("Register User Details - Success")
+    void register()
+    {
+        UserDetailsRecord userDetails1 = new UserDetailsRecord("id", userRecord.fullName(), userRecord.email(),
+                userRecord.password(), "", "");
         Optional<UserDetailsRecord> user = Optional.of(userDetails1);
         doNothing().when(userAccessManagementClient).addUser(any(UserAccessManagementRequest.class));
         when(userAccessManagementClient.findByEmail(userRecord.email())).thenReturn(user);
@@ -87,13 +97,14 @@ class AuthServiceTest {
         verify(jwtService, times(1)).generateToken(userRecord.email());
     }
 
-    @Test
-    @DisplayName("AuthRequest - Success")
-    void authenticate_Success() {
+    @Test @DisplayName("AuthRequest - Success")
+    void authenticate_Success()
+    {
         Object principal = "username";
         Object credentials = "password";
         Optional<UserDetailsRecord> user = Optional.of(userDetails);
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(principal, credentials);
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+                principal, credentials);
         boolean isAuthenticated = true;
         when(authenticationManager.authenticate(usernamePasswordAuthenticationToken)).thenReturn(authenticate);
         when(authenticate.isAuthenticated()).thenReturn(isAuthenticated);
@@ -107,25 +118,23 @@ class AuthServiceTest {
         Assertions.assertEquals(authRequest.email(), actualAuthResponse.getEmail());
     }
 
-    @Test
-    @DisplayName("AuthRequest - Failure")
-    void authenticate_Failure() {
-        when(authenticationManager.authenticate(any()))
-                .thenThrow(new BadCredentialsException("Invalid Access"));
-        BadCredentialsException exception = assertThrows(BadCredentialsException.class, () -> authService.authenticate(authRequest));
+    @Test @DisplayName("AuthRequest - Failure")
+    void authenticate_Failure()
+    {
+        when(authenticationManager.authenticate(any())).thenThrow(new BadCredentialsException("Invalid Access"));
+        BadCredentialsException exception = assertThrows(BadCredentialsException.class,
+                () -> authService.authenticate(authRequest));
         assertEquals("Invalid Access", exception.getMessage());
     }
 
     @Test
-    void register_ShouldSaveUserToken() {
+    void register_ShouldSaveUserToken()
+    {
         UserRecord userRecord = new UserRecord("John Doe", "johndoe@example.com", "password", true);
-        UserAccessManagementRequest userAccessRequest = new UserAccessManagementRequest(
-                userRecord.fullName(),
-                userRecord.email(),
-                "encodedPassword",
-                userRecord.isAdmin()
-        );
-        UserDetailsRecord userDetailsRecord = new UserDetailsRecord("id", "John Doe", "johndoe@example.com", "password", "123", "123");
+        UserAccessManagementRequest userAccessRequest = new UserAccessManagementRequest(userRecord.fullName(),
+                userRecord.email(), "encodedPassword", userRecord.isAdmin());
+        UserDetailsRecord userDetailsRecord = new UserDetailsRecord("id", "John Doe", "johndoe@example.com", "password",
+                "123", "123");
 
         when(passwordEncoder.encode(userRecord.password())).thenReturn("encodedPassword");
         when(userAccessManagementClient.findByEmail(userRecord.email())).thenReturn(Optional.of(userDetailsRecord));
@@ -138,10 +147,12 @@ class AuthServiceTest {
     }
 
     @Test
-    void authenticate_ShouldReturnAuthResponse_OnValidCredentials() {
+    void authenticate_ShouldReturnAuthResponse_OnValidCredentials()
+    {
         AuthRequest authRequest = new AuthRequest("johndoe@example.com", "password");
         Authentication authentication = mock(Authentication.class);
-        UserDetailsRecord userDetailsRecord = new UserDetailsRecord("id", "John Doe", "johndoe@example.com", "password", "123", "123");
+        UserDetailsRecord userDetailsRecord = new UserDetailsRecord("id", "John Doe", "johndoe@example.com", "password",
+                "123", "123");
 
         when(authenticationManager.authenticate(any())).thenReturn(authentication);
         when(authentication.isAuthenticated()).thenReturn(true);
@@ -157,7 +168,8 @@ class AuthServiceTest {
     }
 
     @Test
-    void authenticate_ShouldThrowException_OnInvalidCredentials() {
+    void authenticate_ShouldThrowException_OnInvalidCredentials()
+    {
         AuthRequest authRequest = new AuthRequest("johndoe@example.com", "wrongpassword");
         when(authenticationManager.authenticate(any())).thenThrow(new RuntimeException("Invalid Access"));
 
@@ -165,7 +177,8 @@ class AuthServiceTest {
     }
 
     @Test
-    void generateToken_ShouldReturnJwtToken() {
+    void generateToken_ShouldReturnJwtToken()
+    {
         when(jwtService.generateToken("username")).thenReturn("jwtToken");
 
         String token = authService.generateToken("username");
@@ -174,7 +187,8 @@ class AuthServiceTest {
     }
 
     @Test
-    void generateRefreshToken_ShouldReturnRefreshToken() {
+    void generateRefreshToken_ShouldReturnRefreshToken()
+    {
         when(jwtService.generateRefreshToken("username")).thenReturn("refreshToken");
 
         String token = authService.generateRefreshToken("username");
@@ -183,17 +197,20 @@ class AuthServiceTest {
     }
 
     @Test
-    void validateToken_ShouldInvokeJwtService() {
+    void validateToken_ShouldInvokeJwtService()
+    {
         authService.validateToken("jwtToken");
 
         verify(jwtService).validateToken("jwtToken");
     }
 
     @Test
-    void refreshToken_ShouldUpdateAccessToken2() throws Exception {
+    void refreshToken_ShouldUpdateAccessToken2() throws Exception
+    {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
-        UserDetailsRecord userDetailsRecord = new UserDetailsRecord("id", "John Doe", "johndoe@example.com", "password", "123", "123");
+        UserDetailsRecord userDetailsRecord = new UserDetailsRecord("id", "John Doe", "johndoe@example.com", "password",
+                "123", "123");
 
         when(request.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn("Bearer refreshToken");
 
@@ -203,23 +220,29 @@ class AuthServiceTest {
         when(jwtService.generateToken("johndoe@example.com")).thenReturn("newAccessToken");
 
         OutputStream outputStream = new ByteArrayOutputStream();
-        when(response.getOutputStream()).thenReturn(new ServletOutputStream() {
+        when(response.getOutputStream()).thenReturn(new ServletOutputStream()
+        {
             @Override
-            public void write(int b) {
-                try{
+            public void write(int b)
+            {
+                try
+                {
                     outputStream.write(b);
-                } catch (IOException e) {
+                } catch (IOException e)
+                {
                     throw new RuntimeException(e);
                 }
             }
 
             @Override
-            public boolean isReady() {
+            public boolean isReady()
+            {
                 return true;
             }
 
             @Override
-            public void setWriteListener(WriteListener writeListener) {
+            public void setWriteListener(WriteListener writeListener)
+            {
             }
         });
 

@@ -1,12 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./AdminDashboard.module.css";
 import { FiFilter } from "react-icons/fi";
+import { useNavigate } from 'react-router-dom';
+import axios from "axios";
 
 interface Event {
   id: number;
-  name: string;
-  description: string;
-  slotsFilled: string;
+  eventName: string;
+  eventDescription: string;
+  location: string;
+  skills: string[];
+  urgency: string;
+  eventDate: string;
+  slotsFilled: number;
   checked: boolean;
 }
 
@@ -22,36 +28,86 @@ interface Volunteer {
 export function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("events"); // Track active tab
   const [showFilterPopup, setShowFilterPopup] = useState(false); // Popup state
-  const [selectAll, setSelectAll] = useState(false); // State for select all checkbox
+  const [selectAllEvents, setSelectAllEvents] = useState(false); // State for select all events checkbox
+  const [selectAllVolunteers, setSelectAllVolunteers] = useState(false); // State for select all volunteers checkbox
 
-  {/*INFO for tables*/ }
-  {/*Events*/}
-  const [events, setEvents] = useState<Event[]>([
-    { id: 1, name: "Event1", description: "small description", slotsFilled: "0/6", checked: false },
-    { id: 2, name: "Event2", description: "small description", slotsFilled: "0/6", checked: false },
-    { id: 3, name: "Event3 ", description: "small description", slotsFilled: "0/6", checked: false },
-  ]);
+  // Events state
+  const [events, setEvents] = useState<Event[]>([]);
 
-  {/*Volunteers*/}
+  // Volunteers state
   const [volunteers, setVolunteers] = useState<Volunteer[]>([
     { id: 1, name: "John Doe", preferences: "Helper", availability: "mon", status: "Active", checked: false },
     { id: 2, name: "Jane Smith", preferences: "Coordinator", availability: "mon", status: "Pending", checked: false },
   ]);
 
-  const handleSelectAllChange = () => {
-    const newSelectAll = !selectAll;
-    setSelectAll(newSelectAll);
-    setEvents(events.map(event => ({ ...event, checked: newSelectAll })));
-    setVolunteers(volunteers.map(volunteer => ({ ...volunteer, checked: newSelectAll })));
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    axios.get("http://localhost:8080/api/events")
+      .then((response) => {
+        console.log("Fetched raw data:", response.data);
+  
+        if (!Array.isArray(response.data)) {
+          console.error("Error: Expected an array but got:", response.data);
+          return;
+        }
+  
+        const formattedEvents = response.data.map((event: any) => ({
+          id: event.id,
+          eventName: event.eventName || event.name,  // Handle eventName
+          eventDescription: event.eventDescription || event.description,  // Handle eventDescription
+          location: event.location,  // Handle location
+          skills: event.skills || [],  // Ensure skills is an array (or an empty array if missing)
+          urgency: event.urgency,  // Handle urgency
+          eventDate: event.eventDate,  // Handle eventDate
+          slotsFilled: event.slotsFilled || 0,  // Handle slotsFilled, default to 0 if undefined
+          checked: false,  // Initially false
+        }));
+        
+        console.log("Formatted events:", formattedEvents);
+        setEvents(formattedEvents);
+      })
+      .catch((error) => console.error('Error fetching events:', error));
+  }, []);
+  
+  const handleDeleteEvent = (id: number) => {
+    axios.delete(`http://localhost:8080/api/events/${id}`)
+      .then(() => {
+        setEvents(events.filter(event => event.id !== id)); // Remove deleted event from state
+      })
+      .catch(error => {
+        console.error("Error deleting event:", error);
+      });
   };
 
-  const handleEventCheckboxChange = (id: number) => {
-    setEvents(events.map(event => event.id === id ? { ...event, checked: !event.checked } : event));
-    setVolunteers(volunteers.map(volunteer => volunteer.id === id ? { ...volunteer, checked: !volunteer.checked } : volunteer));
+  const handleEventUpdateClick = (event: Event) => {
+    navigate(`/EditEvent/${event.id}`);  // Navigate to the edit form with event ID
+  };
+  
+
+  const handleSelectAllChange = () => {
+    if (activeTab === "events") {
+      const newSelectAllEvents = !selectAllEvents;
+      setSelectAllEvents(newSelectAllEvents);
+      setEvents(events.map(event => ({ ...event, checked: newSelectAllEvents })));
+    } else if (activeTab === "volunteers") {
+      const newSelectAllVolunteers = !selectAllVolunteers;
+      setSelectAllVolunteers(newSelectAllVolunteers);
+      setVolunteers(volunteers.map(volunteer => ({ ...volunteer, checked: newSelectAllVolunteers })));
+    }
+  };
+
+  const handleEventCheckboxChange = (id: number, type: string) => {
+    if (type === "event") {
+      setEvents(events.map(event => event.id === id ? { ...event, checked: !event.checked } : event));
+    } else if (type === "volunteer") {
+      setVolunteers(volunteers.map(volunteer => volunteer.id === id ? { ...volunteer, checked: !volunteer.checked } : volunteer));
+    }
   };
 
   const resetCheckboxes = () => {
-    setSelectAll(false);
+    setSelectAllEvents(false);
+    setSelectAllVolunteers(false);
     setEvents(events.map(event => ({ ...event, checked: false })));
     setVolunteers(volunteers.map(volunteer => ({ ...volunteer, checked: false })));
   };
@@ -59,6 +115,15 @@ export function AdminDashboard() {
   const handleTabChange = (tab: string) => {
     resetCheckboxes();
     setActiveTab(tab);
+  };
+  
+  // Separate handlers for adding event and volunteer
+  const handleEventAddClick = () => {
+    navigate('/EventForm');
+  };
+
+  const handleVolunteerAddClick = () => {
+    navigate('/VolunteerDetailsForm');
   };
 
   return (
@@ -79,12 +144,12 @@ export function AdminDashboard() {
         </span>
       </div>
 
-      {/*Filter and new event button*/}
+      {/* Filter and new event/volunteer button */}
       <div className={styles.header}>
         <button className={styles.filterButton} onClick={() => setShowFilterPopup(true)}>
           <FiFilter size={20} />
         </button>
-        <button className={styles.newEventButton}>
+        <button className={styles.newEventButton} onClick={activeTab === "events" ? handleEventAddClick : handleVolunteerAddClick}>
           {activeTab === "events" ? "New Event +" : "Add Volunteer +"}
         </button>
       </div>
@@ -102,17 +167,16 @@ export function AdminDashboard() {
         </div>
       )}
 
-      {/* Shows tables depending on which tab is selected*/}
+      {/* Shows tables depending on which tab is selected */}
       {activeTab === "events" ? (
         <table className={styles.eventTable}>
           <thead>
             <tr>
-              <th>
-                <input type="checkbox" checked={selectAll} onChange={handleSelectAllChange} />
-              </th>
+              <th>Select</th>
               <th>Event Name</th>
               <th>Description</th>
               <th>Slots Filled</th>
+              <th>Actions</th> {/* New column for delete button */}
             </tr>
           </thead>
           <tbody>
@@ -122,12 +186,16 @@ export function AdminDashboard() {
                   <input
                     type="checkbox"
                     checked={event.checked}
-                    onChange={() => handleEventCheckboxChange(event.id)}
+                    onChange={() => handleEventCheckboxChange(event.id, "event")}
                   />
                 </td>
-                <td>{event.name}</td>
-                <td>{event.description}</td>
+                <td>{event.eventName}</td>
+                <td>{event.eventDescription}</td>
                 <td>{event.slotsFilled}</td>
+                <td>
+                  <button onClick={() => handleEventUpdateClick(event)}>Update</button> {/* Update button */}
+                  <button onClick={() => handleDeleteEvent(event.id)}>Delete</button> {/* Delete button */}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -137,7 +205,7 @@ export function AdminDashboard() {
           <thead>
             <tr>
               <th>
-                <input type="checkbox" checked={selectAll} onChange={handleSelectAllChange} />
+                <input type="checkbox" checked={selectAllVolunteers} onChange={handleSelectAllChange} />
               </th>
               <th>Volunteer Name</th>
               <th>Preferences</th>
@@ -152,7 +220,7 @@ export function AdminDashboard() {
                   <input
                     type="checkbox"
                     checked={volunteer.checked}
-                    onChange={() => handleEventCheckboxChange(volunteer.id)}
+                    onChange={() => handleEventCheckboxChange(volunteer.id, "volunteer")}
                   />
                 </td>
                 <td>{volunteer.name}</td>

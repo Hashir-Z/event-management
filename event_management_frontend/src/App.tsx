@@ -10,8 +10,10 @@ import { VolunteerDashboard } from './components/VolunteerDashboard';
 import { VolunteerDetails } from './components/VolunteerDetails';
 import { VolunteerHistory } from './components/VolunteerHistory';
 import { VolunteerMatchingForm } from './components/VolunteerMatchingForm';
+import { EditEventForm } from "./components/EditEventForm";
 
 import './App.css';
+import { EventForm } from "./components";
 
 function Layout({ children }: { children: ReactNode }) {
   const location = useLocation();
@@ -45,6 +47,8 @@ function App() {
         <Route path="/VolunteerDetails" element={<Layout><VolunteerDetails /></Layout>} />
         <Route path="/VolunteerHistory" element={<Layout><VolunteerHistory /></Layout>} />
         <Route path="/VolunteerMatchingForm" element={<Layout><VolunteerMatchingForm /></Layout>} />
+        <Route path="/EventForm" element={<Layout><EventForm /></Layout>} />
+        <Route path="/EditEvent/:eventId" element={<EditEventForm />} />
       </Routes>
     </Router>
   );

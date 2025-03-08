@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import Select from "react-select";
+import axios from "axios";
+import {useNavigate} from "react-router-dom";
 import "./EventForm.module.css";
 
 // Define TypeScript types
@@ -15,6 +17,7 @@ interface FormData {
   urgency: string;
   location: string;
   eventDate: string;
+  slotsFilled: number;
 }
 
 export const EventForm: React.FC = () => {
@@ -24,7 +27,8 @@ export const EventForm: React.FC = () => {
     skills: [],
     urgency: "",
     location: "",
-    eventDate: ""
+    eventDate: "",
+    slotsFilled: 0,
   });
 
   const skillOptions: SkillOption[] = [
@@ -38,16 +42,36 @@ export const EventForm: React.FC = () => {
   };
 
   const handleSkillChange = (selectedOptions: readonly { value: string; label: string }[] | null) => {
-    setFormData({ 
-      ...formData, 
-      skills: selectedOptions ? [...selectedOptions] as { value: string; label: string }[] : [] 
+    setFormData({
+      ...formData,
+      skills: selectedOptions ? [...selectedOptions] as { value: string; label: string }[] : []
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const navigate = useNavigate();
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form Submitted", formData);
+
+    const eventData = {
+      eventName: formData.eventName,
+      eventDescription: formData.eventDescription,
+      skills: formData.skills.map(skill => skill.value), // Map skills to just the value
+      urgency: formData.urgency,
+      location: formData.location,
+      eventDate: formData.eventDate,
+      slotsFilled: 0,
+    };
+
+    try {
+      const response = await axios.post("http://localhost:8080/api/events/add", eventData);
+      console.log("Form Submitted Successfully", response.data);
+    } catch (error) {
+      console.error("Error submitting form", error);
+    }
+
+    navigate("/AdminDashboard");
   };
+
 
   return (
     <div className="form-container">
