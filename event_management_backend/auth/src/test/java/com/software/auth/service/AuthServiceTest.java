@@ -7,25 +7,20 @@ import com.software.auth.repository.TokenRepository;
 import com.software.clients.uam.UserAccessManagementClient;
 import com.software.clients.uam.UserAccessManagementRequest;
 import com.software.clients.uam.UserDetailsRecord;
-<<<<<<< HEAD
-=======
 
 import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.WriteListener;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
->>>>>>> e77bd0dccef5ed2378c821de74ced3c16f80f8e4
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-<<<<<<< HEAD
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-=======
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
->>>>>>> e77bd0dccef5ed2378c821de74ced3c16f80f8e4
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
