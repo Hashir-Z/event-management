@@ -1,6 +1,6 @@
-## liquibase formatted sql
-
-## Create table definitions for core tables
+-- liquibase formatted sql
+--changeset Hashir:1
+--comment Create table definitions for core tables
 
 CREATE TABLE users (
                        id VARCHAR(36) NOT NULL PRIMARY KEY,
@@ -10,7 +10,6 @@ CREATE TABLE users (
                        is_admin BOOLEAN NOT NULL DEFAULT FALSE,
                        INDEX idx_email (email)
 );
-
 
 CREATE TABLE token (
                        id VARCHAR(36) NOT NULL PRIMARY KEY,
@@ -55,8 +54,7 @@ CREATE TABLE user_profile_skills (
                                      user_profile_id VARCHAR(255) NOT NULL,
                                      skill_id BIGINT NOT NULL,
                                      PRIMARY KEY (user_profile_id, skill_id),
-                                     FOREIGN KEY (user_profile_id) REFERENCES user_profile(id) ON DELETE CASCADE,
-                                     FOREIGN KEY (skill_id) REFERENCES skill_entity(id) ON DELETE CASCADE
+                                     FOREIGN KEY (user_profile_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE event (
@@ -70,15 +68,15 @@ CREATE TABLE event (
                        slots_filled INT DEFAULT 0
 );
 
+CREATE TABLE skill (
+                       id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                       name VARCHAR(100) UNIQUE NOT NULL
+);
+
 CREATE TABLE event_skills (
                               event_id BIGINT,
                               skill_id BIGINT,
                               PRIMARY KEY (event_id, skill_id),
                               FOREIGN KEY (event_id) REFERENCES event(id) ON DELETE CASCADE,
                               FOREIGN KEY (skill_id) REFERENCES skill(id) ON DELETE CASCADE
-);
-
-CREATE TABLE skill (
-                       id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                       name VARCHAR(100) UNIQUE NOT NULL
 );

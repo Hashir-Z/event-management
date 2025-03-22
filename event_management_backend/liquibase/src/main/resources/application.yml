@@ -13,9 +13,7 @@ spring:
     password: password
   liquibase:
     change-log: classpath:/db/changelog/changelog-master.xml
-    parameters:
-      key: LiquibaseWithSpringBoot
 
 logging:
   level:
-    liquibase: INFO
+    liquibase: debug
