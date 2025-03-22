@@ -16,6 +16,7 @@
         <module>api-gateway</module>
         <module>auth</module>
         <module>clients</module>
+        <module>liquibase</module>
         <module>user-profile</module>
         <module>common</module>
         <module>user-access-management</module>

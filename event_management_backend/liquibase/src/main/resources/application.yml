@@ -1,0 +1,21 @@
+server:
+  port: 9090
+  error:
+    include-message: always
+
+spring:
+  application:
+    name: liquibase
+
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:3307/event_management
+    username: root
+    password: password
+  liquibase:
+    change-log: classpath:/db/changelog/changelog-master.xml
+    parameters:
+      key: LiquibaseWithSpringBoot
+
+logging:
+  level:
+    liquibase: INFO
