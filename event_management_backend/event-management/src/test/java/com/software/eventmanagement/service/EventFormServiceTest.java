@@ -1,108 +1,110 @@
 package com.software.eventmanagement.service;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import com.software.eventmanagement.model.Event;
+import com.software.eventmanagement.model.Skill;
+import com.software.eventmanagement.repository.EventRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.software.eventmanagement.model.Event;
-import com.software.eventmanagement.repository.EventRepository;
+import java.time.LocalDate;
+import java.util.*;
 
-@ExtendWith(MockitoExtension.class)
-public class EventFormServiceTest {
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class) // Enables Mockito in JUnit 5
+class EventFormServiceTest {
 
     @Mock
-    private EventRepository eventRepository;
+    private EventRepository eventRepository; // Mock repository
 
     @InjectMocks
-    private EventFormService eventService;
+    private EventFormService eventFormService; // Inject mock into service
 
-    private Event testEvent;
+    private Event event;
+    private final Long eventId = 1L;
 
     @BeforeEach
-    public void setUp() {
-        testEvent = new Event("Test Event", "Description", "Location", List.of("Skill1", "Skill2"), "High", LocalDate.now());
+    void setUp() {
+        // Initialize an Event object before each test
+        event = new Event("Tech Meetup", "A networking event for developers",
+                "Downtown", Set.of(Skill.TECHNICAL, Skill.COMMUNICATION),
+                "High", LocalDate.of(2025, 5, 20));
+        event.setId(eventId);
     }
 
     @Test
-    public void testCreateEvent() {
-        when(eventRepository.save(any(Event.class))).thenReturn(testEvent);
+    void testCreateEventWithSkills() {
+        when(eventRepository.save(any(Event.class))).thenReturn(event);
 
-        Event createdEvent = eventService.createEvent(testEvent);
+        Event savedEvent = eventFormService.createEventWithSkills(
+                "Tech Meetup", "A networking event for developers",
+                "Downtown", Set.of(Skill.TECHNICAL, Skill.COMMUNICATION),
+                "High", LocalDate.of(2025, 5, 20));
 
-        assertNotNull(createdEvent);
-        assertEquals("Test Event", createdEvent.getEventName());
+        assertNotNull(savedEvent);
+        assertEquals("Tech Meetup", savedEvent.getEventName());
+        verify(eventRepository, times(1)).save(any(Event.class));
     }
 
     @Test
-    public void testGetAllEvents() {
-        List<Event> eventList = List.of(testEvent);
-        when(eventRepository.findAll()).thenReturn(eventList);
+    void testGetAllEvents() {
+        when(eventRepository.findAll()).thenReturn(List.of(event));
 
-        List<Event> result = eventService.getAllEvents();
+        List<Event> events = eventFormService.getAllEvents();
 
-        assertNotNull(result);
-        assertEquals(1, result.size());
+        assertFalse(events.isEmpty());
+        assertEquals(1, events.size());
+        assertEquals("Tech Meetup", events.get(0).getEventName());
+        verify(eventRepository, times(1)).findAll();
     }
 
     @Test
-    public void testGetEventById_Success() {
-        when(eventRepository.findById(1L)).thenReturn(Optional.of(testEvent));
+    void testGetEventById() {
+        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
 
-        Event event = eventService.getEventById(1L);
+        Event foundEvent = eventFormService.getEventById(eventId);
 
-        assertNotNull(event);
-        assertEquals("Test Event", event.getEventName());
+        assertNotNull(foundEvent);
+        assertEquals(eventId, foundEvent.getId());
+        verify(eventRepository, times(1)).findById(eventId);
     }
 
     @Test
-    public void testGetEventById_NotFound() {
-        when(eventRepository.findById(999L)).thenReturn(Optional.empty());
+    void testUpdateEvent() {
+        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
+        when(eventRepository.save(any(Event.class))).thenReturn(event);
 
-        Event event = eventService.getEventById(999L);
-
-        assertNull(event);
-    }
-
-    @Test
-    public void testUpdateEvent_Success() {
-        when(eventRepository.findById(1L)).thenReturn(Optional.of(testEvent));
-        when(eventRepository.save(any(Event.class))).thenReturn(testEvent);
-
-        Event updatedEvent = eventService.updateEvent(1L, testEvent);
+        Event updatedEvent = eventFormService.updateEvent(eventId,
+                "Updated Event", "Updated Description", "Updated Location",
+                Set.of(Skill.LEADERSHIP), "Medium", LocalDate.of(2025, 6, 15));
 
         assertNotNull(updatedEvent);
-        assertEquals("Test Event", updatedEvent.getEventName());
+        assertEquals("Updated Event", updatedEvent.getEventName());
+        verify(eventRepository, times(1)).save(any(Event.class));
     }
 
     @Test
-    public void testUpdateEvent_NotFound() {
-        when(eventRepository.findById(999L)).thenReturn(Optional.empty());
+    void testDeleteEvent() {
+        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
 
-        Event updatedEvent = eventService.updateEvent(999L, testEvent);
+        boolean isDeleted = eventFormService.deleteEvent(eventId);
 
-        assertNull(updatedEvent);
+        assertTrue(isDeleted);
+        verify(eventRepository, times(1)).deleteById(eventId);
     }
 
     @Test
-    public void testDeleteEvent() {
-        doNothing().when(eventRepository).deleteById(1L);
+    void testDeleteEventNotFound() {
+        when(eventRepository.findById(eventId)).thenReturn(Optional.empty());
 
-        eventService.deleteEvent(1L);
+        boolean isDeleted = eventFormService.deleteEvent(eventId);
 
-        verify(eventRepository, times(1)).deleteById(1L);
+        assertFalse(isDeleted);
+        verify(eventRepository, never()).deleteById(eventId);
     }
 }

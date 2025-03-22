@@ -1,83 +1,86 @@
 package com.software.eventmanagement.controller;
 
-import java.util.List;
-
+import com.software.eventmanagement.model.Event;
+import com.software.eventmanagement.model.Skill;
+import com.software.eventmanagement.service.EventFormService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.software.eventmanagement.exception.ResourceNotFoundException;
-import com.software.eventmanagement.model.Event;
-import com.software.eventmanagement.repository.EventRepository;
-import com.software.eventmanagement.service.EventFormService;
-
-import jakarta.validation.Valid;
-
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/events")
 public class EventFormController {
 
     private final EventFormService eventService;
-    private final EventRepository eventRepository;
 
-    // Combine both constructor injections into one
     @Autowired
-    public EventFormController(EventFormService eventService, EventRepository eventRepository) {
+    public EventFormController(EventFormService eventService) {
         this.eventService = eventService;
-        this.eventRepository = eventRepository;
     }
 
+    // Create Event
     @PostMapping("/add")
-    public ResponseEntity<Event> createEvent(@Valid @RequestBody Event event) {
-        Event createdEvent = eventService.createEvent(event);
+    public ResponseEntity<Event> createEvent(@RequestBody Event event) {
+        // Call service method to create event
+        Event createdEvent = eventService.createEventWithSkills(
+                event.getEventName(),
+                event.getEventDescription(),
+                event.getLocation(),
+                event.getSkills(),
+                event.getUrgency(),
+                event.getEventDate()
+        );
         return new ResponseEntity<>(createdEvent, HttpStatus.CREATED);
     }
 
+    // Update Event
     @PutMapping("/{id}")
-public ResponseEntity<Event> updateEvent(@PathVariable Long id, @RequestBody Event updatedEvent) {
-    Event existingEvent = eventRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Event not found"));
+    public ResponseEntity<Event> updateEvent(@PathVariable Long id, @RequestBody Event event) {
+        // Call service method to update event
+        Event updatedEvent = eventService.updateEvent(
+                id,
+                event.getEventName(),
+                event.getEventDescription(),
+                event.getLocation(),
+                event.getSkills(),
+                event.getUrgency(),
+                event.getEventDate()
+        );
 
-    existingEvent.setEventName(updatedEvent.getEventName());
-    existingEvent.setEventDescription(updatedEvent.getEventDescription());
-    existingEvent.setLocation(updatedEvent.getLocation());
-    existingEvent.setSkills(updatedEvent.getSkills());
-    existingEvent.setUrgency(updatedEvent.getUrgency());
-    existingEvent.setEventDate(updatedEvent.getEventDate());
-    existingEvent.setSlotsFilled(updatedEvent.getSlotsFilled());
+        if (updatedEvent == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
-    Event updated = eventRepository.save(existingEvent);
-    return ResponseEntity.ok(updated);
-}
-
-    
-    @GetMapping
-    public List<Event> getAllEvents() {
-        return eventService.getAllEvents();
+        return new ResponseEntity<>(updatedEvent, HttpStatus.OK);
     }
 
+    // Get Event by ID
     @GetMapping("/{id}")
     public ResponseEntity<Event> getEventById(@PathVariable Long id) {
         Event event = eventService.getEventById(id);
-        if (event != null) {
-            return new ResponseEntity<>(event, HttpStatus.OK);
-        } else {
+        if (event == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        return new ResponseEntity<>(event, HttpStatus.OK);
     }
 
+    // Get All Events
+    @GetMapping
+    public ResponseEntity<Iterable<Event>> getAllEvents() {
+        Iterable<Event> events = eventService.getAllEvents();
+        return new ResponseEntity<>(events, HttpStatus.OK);
+    }
+
+    // Delete Event by ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
-        eventService.deleteEvent(id);
-        return ResponseEntity.noContent().build();
+        boolean isDeleted = eventService.deleteEvent(id);
+        if (isDeleted) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }

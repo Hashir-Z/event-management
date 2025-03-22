@@ -1,12 +1,13 @@
 package com.software.eventmanagement.model;
 
-import java.time.LocalDate;
-import java.util.List;
-
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+
+import java.time.LocalDate;
+import java.util.Set;
 
 @Entity
 public class Event {
@@ -18,7 +19,10 @@ public class Event {
     private String eventName;
     private String eventDescription;
     private String location;
-    private List<String> skills;
+
+    @ElementCollection
+    private Set<Skill> skills;  // This is where the Enum will be used
+
     private String urgency;
     private LocalDate eventDate;
     private int slotsFilled;
@@ -26,7 +30,7 @@ public class Event {
     // Constructors
     public Event() {}
 
-    public Event(String eventName, String eventDescription, String location, List<String> skills, String urgency, LocalDate eventDate) {
+    public Event(String eventName, String eventDescription, String location, Set<Skill> skills, String urgency, LocalDate eventDate) {
         this.eventName = eventName;
         this.eventDescription = eventDescription;
         this.location = location;
@@ -44,15 +48,6 @@ public class Event {
     public void setId(Long id) {
         this.id = id;
     }
-
-    public int getSlotsFilled() {
-        return slotsFilled;
-    }
-    
-    public void setSlotsFilled(int slotsFilled) {
-        this.slotsFilled = slotsFilled;
-    }
-    
 
     public String getEventName() {
         return eventName;
@@ -78,11 +73,11 @@ public class Event {
         this.location = location;
     }
 
-    public List<String> getSkills() {
+    public Set<Skill> getSkills() {
         return skills;
     }
 
-    public void setSkills(List<String> skills) {
+    public void setSkills(Set<Skill> skills) {
         this.skills = skills;
     }
 
@@ -100,5 +95,13 @@ public class Event {
 
     public void setEventDate(LocalDate eventDate) {
         this.eventDate = eventDate;
+    }
+
+    public int getSlotsFilled() {
+        return slotsFilled;
+    }
+
+    public void setSlotsFilled(int slotsFilled) {
+        this.slotsFilled = slotsFilled;
     }
 }

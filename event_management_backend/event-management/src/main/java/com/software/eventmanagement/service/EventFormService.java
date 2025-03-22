@@ -1,62 +1,81 @@
 package com.software.eventmanagement.service;
 
-import java.util.List;
-import java.util.Optional;
-
+import com.software.eventmanagement.model.Event;
+import com.software.eventmanagement.model.Skill;
+import com.software.eventmanagement.repository.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.software.eventmanagement.model.Event;
-import com.software.eventmanagement.repository.EventRepository;
-
-import jakarta.transaction.Transactional;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
+import java.util.Optional;
 
 @Service
 public class EventFormService {
 
-    private final EventRepository eventRepository;
-
     @Autowired
-    public EventFormService(EventRepository eventRepository) {
-        this.eventRepository = eventRepository;
-    }
+    private EventRepository eventRepository;
 
-    @Transactional
-    public Event createEvent(Event event) {
+    // Create a new event with associated skills
+    public Event createEventWithSkills(String eventName, String eventDescription, String location,
+                                       Set<Skill> skills, String urgency, LocalDate eventDate) {
+
+        Event event = new Event();
+        event.setEventName(eventName);
+        event.setEventDescription(eventDescription);
+        event.setLocation(location);
+        event.setSkills(skills);
+        event.setUrgency(urgency);
+        event.setEventDate(eventDate);
         event.setSlotsFilled(0);
+
+        // Save and return the event
         return eventRepository.save(event);
     }
 
+    // Get all events
     public List<Event> getAllEvents() {
         return eventRepository.findAll();
     }
 
-    public Event updateEvent(Long id, Event updatedEvent) {
+    // Get event by ID
+    public Event getEventById(Long id) {
+        Optional<Event> event = eventRepository.findById(id);
+        return event.orElse(null); // Return null if event is not found
+    }
+
+    // Update an existing event
+    public Event updateEvent(Long id, String eventName, String eventDescription, String location,
+                             Set<Skill> skills, String urgency, LocalDate eventDate) {
+
         Optional<Event> existingEventOptional = eventRepository.findById(id);
 
-        if (existingEventOptional.isPresent()) {
-            Event existingEvent = existingEventOptional.get();
-
-            // Update all fields
-            existingEvent.setEventName(updatedEvent.getEventName());
-            existingEvent.setEventDescription(updatedEvent.getEventDescription());
-            existingEvent.setLocation(updatedEvent.getLocation());
-            existingEvent.setSkills(updatedEvent.getSkills());
-            existingEvent.setUrgency(updatedEvent.getUrgency());
-            existingEvent.setEventDate(updatedEvent.getEventDate());
-            existingEvent.setSlotsFilled(updatedEvent.getSlotsFilled());
-
-            return eventRepository.save(existingEvent); // Save the updated event
-        } else {
+        if (!existingEventOptional.isPresent()) {
             return null; // Event not found
         }
+
+        Event existingEvent = existingEventOptional.get();
+
+        existingEvent.setEventName(eventName);
+        existingEvent.setEventDescription(eventDescription);
+        existingEvent.setLocation(location);
+        existingEvent.setSkills(skills);
+        existingEvent.setUrgency(urgency);
+        existingEvent.setEventDate(eventDate);
+
+        // Save and return the updated event
+        return eventRepository.save(existingEvent);
     }
 
-    public Event getEventById(Long id) {
-        return eventRepository.findById(id).orElse(null);
-    }
+    // Delete an event by ID
+    public boolean deleteEvent(Long id) {
+        Optional<Event> eventOptional = eventRepository.findById(id);
+        if (!eventOptional.isPresent()) {
+            return false; // Event not found
+        }
 
-    public void deleteEvent(Long id) {
         eventRepository.deleteById(id);
+        return true; // Event successfully deleted
     }
 }

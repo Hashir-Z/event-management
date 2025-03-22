@@ -46,12 +46,6 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
         <!-- H2 Database for in-memory database during testing -->
         <dependency>
             <groupId>com.h2database</groupId>
@@ -63,6 +57,12 @@
         <dependency>
             <groupId>jakarta.persistence</groupId>
             <artifactId>jakarta.persistence-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 
@@ -76,8 +76,8 @@
                 <executions>
                     <execution>
                         <goals>
-                            <goal>prepare-agent</goal>
-                            <goal>report</goal>
+                            <goal>prepare-agent</goal> <!-- Prepares JaCoCo agent -->
+                            <goal>report</goal> <!-- Generates coverage report -->
                         </goals>
                     </execution>
                 </executions>
@@ -102,4 +102,23 @@
             </plugin>
         </plugins>
     </build>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.12</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>html</report> <!-- HTML format -->
+                            <report>xml</report>  <!-- XML format -->
+                            <report>csv</report>  <!-- CSV format -->
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
 </project>
