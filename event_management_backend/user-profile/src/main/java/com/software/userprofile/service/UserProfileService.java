@@ -1,49 +1,74 @@
 package com.software.userprofile.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.software.userprofile.model.UserProfile;
+import com.software.userprofile.repository.UserProfileRepository;
+import com.software.userprofile.repository.UserProfileSkillsRepository;
+import com.software.userprofile.repository.UserProfileAvailabilityRepository;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserProfileService {
 
-    private List<UserProfile> userProfiles;
+    @Autowired
+    private UserProfileRepository userProfileRepository;
 
-    public UserProfileService() {
-        this.userProfiles = new ArrayList<>(Arrays.asList(
-            new UserProfile("John Doe", "123 Main St", "Apt 4", "Houston", "TX", "77001", 
-                            Arrays.asList("Java", "React"), "Open to any volunteer work", Arrays.asList("2025-03-01", "2025-03-10")),
-            new UserProfile("Jane Smith", "456 Oak Rd", null, "Austin", "TX", "78701", 
-                            Arrays.asList("Spring", "MySQL"), "Looking for leadership roles", Arrays.asList("2025-04-01"))
-        ));
-    }
+    @Autowired
+    private UserProfileSkillsRepository userProfileSkillsRepository;
+
+    @Autowired
+    private UserProfileAvailabilityRepository userProfileAvailabilityRepository;
 
     public List<UserProfile> getUserProfiles() {
-        return userProfiles;
+        return userProfileRepository.findAll();
     }
 
     public UserProfile getUserProfile(String fullName) {
-        return userProfiles.stream()
-                .filter(profile -> profile.getFullName().equalsIgnoreCase(fullName))
-                .findFirst()
-                .orElse(null);
-    }
-
-    public void addUserProfile(UserProfile userProfile) {
-        userProfiles.add(userProfile);
-    }
-
-    public void clearUserProfiles() {
-        userProfiles.clear();
+        return userProfileRepository.findByFullName(fullName);
     }
 
     public UserProfile saveUserProfile(UserProfile userProfile) {
-        // add logic to save the user profile in a database
-        System.out.println("Saving user profile: " + userProfile);
-        return userProfile; // Return the saved profile for now
+        // Save the user profile itself
+        UserProfile savedProfile = userProfileRepository.save(userProfile);
+
+        // Add the associated skills
+        if (userProfile.getSkills() != null) {
+            userProfile.getSkills().forEach(skill -> {
+                userProfileSkillsRepository.save(new UserProfileSkills(savedProfile.getId(), skill.getId()));
+            });
+        }
+
+        // Add the associated availability
+        if (userProfile.getAvailability() != null) {
+            userProfile.getAvailability().forEach(avail -> {
+                userProfileAvailabilityRepository.save(new UserProfileAvailability(savedProfile.getId(), avail));
+            });
+        }
+
+        return savedProfile;
+    }
+
+    public void addSkillsToUserProfile(String userProfileId, List<SkillEntity> skills) {
+        Optional<UserProfile> userProfileOpt = userProfileRepository.findById(userProfileId);
+        if (userProfileOpt.isPresent()) {
+            UserProfile userProfile = userProfileOpt.get();
+            skills.forEach(skill -> {
+                userProfileSkillsRepository.save(new UserProfileSkills(userProfileId, skill.getId()));
+            });
+        }
+    }
+
+    public void addAvailabilityToUserProfile(String userProfileId, List<String> availabilityList) {
+        Optional<UserProfile> userProfileOpt = userProfileRepository.findById(userProfileId);
+        if (userProfileOpt.isPresent()) {
+            UserProfile userProfile = userProfileOpt.get();
+            availabilityList.forEach(avail -> {
+                userProfileAvailabilityRepository.save(new UserProfileAvailability(userProfileId, avail));
+            });
+        }
     }
 }

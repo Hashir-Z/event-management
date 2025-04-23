@@ -84,7 +84,7 @@ export const VolunteerDetails: React.FC = () => {
     };
   
     // Post data to the backend
-    fetch('http://localhost:8080/api/user-profiles/add', {
+    fetch('http://localhost:8082/api/user-profiles/add', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
