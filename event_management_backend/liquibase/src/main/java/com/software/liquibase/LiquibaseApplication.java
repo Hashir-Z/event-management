@@ -1,12 +1,12 @@
-package com.software.userprofile;
+package com.software.liquibase;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class Main {
+public class LiquibaseApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(Main.class, args);
+        SpringApplication.run(LiquibaseApplication.class, args);
     }
 }
