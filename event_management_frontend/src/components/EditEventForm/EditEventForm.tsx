@@ -21,13 +21,11 @@ interface Event {
 
 // Define skill options outside the component to prevent recreation on each render
 const skillOptions: SkillOption[] = [
-  { value: "JAVA", label: "Java" },
-  { value: "PYTHON", label: "Python" },
-  { value: "JAVASCRIPT", label: "JavaScript" },
-  { value: "SQL", label: "SQL" },
-  { value: "FRONTEND", label: "Frontend" },
-  { value: "BACKEND", label: "Backend" },
-  { value: "FULLSTACK", label: "Fullstack" }
+  { value: "COMMUNICATION", label: "Communication" },
+  { value: "LEADERSHIP", label: "Leadership" },
+  { value: "TEAMWORK", label: "Teamwork" },
+  { value: "ORGANIZATION", label: "Organization" },
+  { value: "TECHNICAL", label: "Technical" }
 ];
 
 export const EditEventForm = () => {
