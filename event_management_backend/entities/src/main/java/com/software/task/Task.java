@@ -1,10 +1,9 @@
 package com.software.task;
 
-import com.software.event.Event;
+import com.software.event_details.EventDetails;
 import com.software.skill.Skill;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -54,7 +53,7 @@ public class Task {
 
     @ManyToOne
     @JoinColumn(name = "event_id")
-    private Event event;
+    private EventDetails event;
 
     @ManyToMany
     @JoinTable(

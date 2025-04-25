@@ -34,5 +34,5 @@ public class Assignment {
         Pending, Confirmed, Declined
     }
 
-    // Getters and Setters
+
 }

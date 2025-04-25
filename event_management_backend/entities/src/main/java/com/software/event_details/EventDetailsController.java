@@ -1,4 +1,4 @@
-package com.software.event;
+package com.software.event_details;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -11,21 +11,21 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/events")
-public class EventController {
+public class EventDetailsController {
     @Autowired
-    private EventService service;
+    private EventDetailsService service;
 
     @GetMapping
-    public List<Event> findAll() { return service.findAll(); }
+    public List<EventDetails> findAll() { return service.findAll(); }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Event> findById(@PathVariable Integer id) {
-        Event event = service.findById(id);
+    public ResponseEntity<EventDetails> findById(@PathVariable Integer id) {
+        EventDetails event = service.findById(id);
         return event != null ? ResponseEntity.ok(event) : ResponseEntity.notFound().build();
     }
 
     @PostMapping
-    public Event save(@RequestBody Event event) { return service.save(event); }
+    public EventDetails save(@RequestBody EventDetails event) { return service.save(event); }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {

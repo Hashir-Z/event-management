@@ -1,9 +1,8 @@
-package com.software.event;
+package com.software.event_details;
 
 import com.software.task.Task;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -11,10 +10,10 @@ import java.util.List;
 
 
 @Entity
-@Table(name = "event")
+@Table(name = "event_details")
 @Getter
 @Setter
-public class Event {
+public class EventDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="event_id")
