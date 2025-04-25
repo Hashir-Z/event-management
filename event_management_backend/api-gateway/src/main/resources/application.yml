@@ -29,10 +29,15 @@ spring:
           predicates:
             - Path=/auth/**
 
-        - id: metadata
-          uri: http://localhost:8084
+        - id: user-profile-service
+          uri: http://localhost:8082
           predicates:
-            - Path=/metadata/**
+            - Path=/api/user-profiles/**
+
+        - id: event-management-service
+          uri: http://localhost:8080
+          predicates:
+            - Path=/api/events/**
 
 logging:
   level:

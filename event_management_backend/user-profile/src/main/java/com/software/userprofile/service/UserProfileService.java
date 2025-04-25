@@ -1,27 +1,28 @@
 package com.software.userprofile.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.software.userprofile.model.*;
+import com.software.userprofile.repository.*;
 import org.springframework.stereotype.Service;
-
-import com.software.userprofile.model.UserProfile;
-import com.software.userprofile.repository.UserProfileRepository;
-import com.software.userprofile.repository.UserProfileSkillsRepository;
-import com.software.userprofile.repository.UserProfileAvailabilityRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserProfileService {
 
-    @Autowired
-    private UserProfileRepository userProfileRepository;
+    private final UserProfileRepository userProfileRepository;
+    private final UserProfileSkillsRepository userProfileSkillsRepository;
+    private final UserProfileAvailabilityRepository userProfileAvailabilityRepository;
 
-    @Autowired
-    private UserProfileSkillsRepository userProfileSkillsRepository;
-
-    @Autowired
-    private UserProfileAvailabilityRepository userProfileAvailabilityRepository;
+    public UserProfileService(
+            UserProfileRepository userProfileRepository,
+            UserProfileSkillsRepository userProfileSkillsRepository,
+            UserProfileAvailabilityRepository userProfileAvailabilityRepository
+    ) {
+        this.userProfileRepository = userProfileRepository;
+        this.userProfileSkillsRepository = userProfileSkillsRepository;
+        this.userProfileAvailabilityRepository = userProfileAvailabilityRepository;
+    }
 
     public List<UserProfile> getUserProfiles() {
         return userProfileRepository.findAll();
@@ -31,44 +32,38 @@ public class UserProfileService {
         return userProfileRepository.findByFullName(fullName);
     }
 
+    @Transactional
     public UserProfile saveUserProfile(UserProfile userProfile) {
-        // Save the user profile itself
         UserProfile savedProfile = userProfileRepository.save(userProfile);
 
-        // Add the associated skills
         if (userProfile.getSkills() != null) {
             userProfile.getSkills().forEach(skill -> {
-                userProfileSkillsRepository.save(new UserProfileSkills(savedProfile.getId(), skill.getId()));
+                userProfileSkillsRepository.save(new UserProfileSkills(savedProfile, skill.getSkill()));
             });
         }
 
-        // Add the associated availability
         if (userProfile.getAvailability() != null) {
             userProfile.getAvailability().forEach(avail -> {
-                userProfileAvailabilityRepository.save(new UserProfileAvailability(savedProfile.getId(), avail));
+                userProfileAvailabilityRepository.save(new UserProfileAvailability(savedProfile, avail.getAvailableDate()));
             });
         }
 
         return savedProfile;
     }
 
-    public void addSkillsToUserProfile(String userProfileId, List<SkillEntity> skills) {
-        Optional<UserProfile> userProfileOpt = userProfileRepository.findById(userProfileId);
-        if (userProfileOpt.isPresent()) {
-            UserProfile userProfile = userProfileOpt.get();
-            skills.forEach(skill -> {
-                userProfileSkillsRepository.save(new UserProfileSkills(userProfileId, skill.getId()));
-            });
-        }
+    @Transactional
+    public void addSkillsToUserProfile(Long userProfileId, List<SkillEntity> skills) {
+        UserProfile userProfile = userProfileRepository.findById(String.valueOf(userProfileId))
+                .orElseThrow(() -> new RuntimeException("User profile not found"));
+
+        skills.forEach(skill -> userProfileSkillsRepository.save(new UserProfileSkills(userProfile, skill)));
     }
 
-    public void addAvailabilityToUserProfile(String userProfileId, List<String> availabilityList) {
-        Optional<UserProfile> userProfileOpt = userProfileRepository.findById(userProfileId);
-        if (userProfileOpt.isPresent()) {
-            UserProfile userProfile = userProfileOpt.get();
-            availabilityList.forEach(avail -> {
-                userProfileAvailabilityRepository.save(new UserProfileAvailability(userProfileId, avail));
-            });
-        }
+    @Transactional
+    public void addAvailabilityToUserProfile(Long userProfileId, List<UserProfileAvailability> availabilityList) {
+        UserProfile userProfile = userProfileRepository.findById(String.valueOf(userProfileId))
+                .orElseThrow(() -> new RuntimeException("User profile not found"));
+
+        availabilityList.forEach(avail -> userProfileAvailabilityRepository.save(new UserProfileAvailability(userProfile, avail.getAvailableDate())));
     }
 }

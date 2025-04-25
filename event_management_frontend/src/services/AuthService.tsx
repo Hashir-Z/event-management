@@ -1,6 +1,10 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API_URL = 'http://localhost:8083/auth';
+const API_URL = "http://localhost:8083/auth";
+
+const axiosInstance = axios.create({
+  baseURL: API_URL,
+});
 
 export interface LoginRequest {
   email: string;
@@ -26,46 +30,56 @@ export interface RegistrationRequest {
 
 class AuthService {
   setAccessToken(token: string): void {
-    localStorage.setItem('access-token', token);
+    localStorage.setItem("access-token", token);
   }
 
   getAccessToken(): string | null {
-    return localStorage.getItem('access-token');
+    return localStorage.getItem("access-token");
   }
 
   setRefreshToken(token: string): void {
-    localStorage.setItem('refresh-token', token);
+    localStorage.setItem("refresh-token", token);
   }
 
   getRefreshToken(): string | null {
-    return localStorage.getItem('refresh-token');
+    return localStorage.getItem("refresh-token");
   }
 
   async register(userRegistrationInfo: RegistrationRequest): Promise<object> {
     try {
-      const response = await axios.post(`${API_URL}/register`, userRegistrationInfo);
+      const response = await axiosInstance.post(
+        "/register",
+        userRegistrationInfo
+      );
       return response.data;
     } catch (error) {
-      console.error('Error registering user:', error);
+      console.error("Error registering user:", error);
       throw error;
     }
   }
 
   async login(userLoginInfo: LoginRequest): Promise<LoginResponse> {
     try {
-      const response = await axios.post<LoginResponse>(`${API_URL}/token`, userLoginInfo);
+      const response = await axiosInstance.post<LoginResponse>(
+        "/token",
+        userLoginInfo
+      );
+      const { accessToken } = response.data;
+
+      this.setAccessToken(accessToken); // Store token after login
       return response.data;
     } catch (error) {
-      console.error('Error during login:', error);
+      console.error("Error during login:", error);
       throw error;
     }
   }
 
   async logout(): Promise<void> {
     try {
-      await axios.post(`${API_URL}/logout`);
+      await axiosInstance.post("/logout");
+      localStorage.removeItem("access-token"); // Clear token on logout
     } catch (error) {
-      console.error('Error during logout:', error);
+      console.error("Error during logout:", error);
       throw error;
     }
   }

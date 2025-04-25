@@ -1,9 +1,9 @@
 package com.software.userprofile.repository;
 
-import com.software.userprofile.model.UserProfileSkills;
+import com.software.userprofile.model.UserProfileAvailability;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserProfileSkillsRepository extends JpaRepository<UserProfileSkills, Long> {
+public interface UserProfileAvailabilityRepository extends JpaRepository<UserProfileAvailability, Long> {
 }

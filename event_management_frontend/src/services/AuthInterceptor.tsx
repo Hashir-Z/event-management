@@ -2,16 +2,17 @@ import axios, { AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import AuthService from "./AuthService";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:8083:",
-  timeout: 5000,
+  baseURL: "http://localhost:8083",
 });
 
 axiosInstance.interceptors.request.use(
-(config: InternalAxiosRequestConfig): InternalAxiosRequestConfig | Promise<InternalAxiosRequestConfig> => {
+  (
+    config: InternalAxiosRequestConfig
+  ): InternalAxiosRequestConfig | Promise<InternalAxiosRequestConfig> => {
     const accessToken = AuthService.getAccessToken();
-    console.log('Request Interceptor Triggered');
-    console.log('Request Configuration:', config);
-    if (accessToken) {
+    console.log("Request Interceptor Triggered");
+    console.log("Request Configuration:", config);
+    if (accessToken && !config.url?.includes("/token")) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
 

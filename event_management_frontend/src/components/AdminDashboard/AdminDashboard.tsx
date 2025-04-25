@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styles from "./AdminDashboard.module.css";
 import { FiFilter } from "react-icons/fi";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 interface Event {
@@ -36,94 +36,128 @@ export function AdminDashboard() {
 
   // Volunteers state
   const [volunteers, setVolunteers] = useState<Volunteer[]>([
-    { id: 1, name: "John Doe", preferences: "Helper", availability: "mon", status: "Active", checked: false },
-    { id: 2, name: "Jane Smith", preferences: "Coordinator", availability: "mon", status: "Pending", checked: false },
+    {
+      id: 1,
+      name: "John Doe",
+      preferences: "Helper",
+      availability: "mon",
+      status: "Active",
+      checked: false,
+    },
+    {
+      id: 2,
+      name: "Jane Smith",
+      preferences: "Coordinator",
+      availability: "mon",
+      status: "Pending",
+      checked: false,
+    },
   ]);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get("http://localhost:8080/api/events")
+    axios
+      .get("http://localhost:8080/api/events")
       .then((response) => {
         console.log("Fetched raw data:", response.data);
-  
+
         if (!Array.isArray(response.data)) {
           console.error("Error: Expected an array but got:", response.data);
           return;
         }
-  
+
         const formattedEvents = response.data.map((event: any) => ({
           id: event.id,
-          eventName: event.eventName || event.name,  // Handle eventName
-          eventDescription: event.eventDescription || event.description,  // Handle eventDescription
-          location: event.location,  // Handle location
-          skills: event.skills || [],  // Ensure skills is an array (or an empty array if missing)
-          urgency: event.urgency,  // Handle urgency
-          eventDate: event.eventDate,  // Handle eventDate
-          slotsFilled: event.slotsFilled || 0,  // Handle slotsFilled, default to 0 if undefined
-          checked: false,  // Initially false
+          eventName: event.eventName || event.name, // Handle eventName
+          eventDescription: event.eventDescription || event.description, // Handle eventDescription
+          location: event.location, // Handle location
+          skills: event.skills || [], // Ensure skills is an array (or an empty array if missing)
+          urgency: event.urgency, // Handle urgency
+          eventDate: event.eventDate, // Handle eventDate
+          slotsFilled: event.slotsFilled || 0, // Handle slotsFilled, default to 0 if undefined
+          checked: false, // Initially false
         }));
-        
+
         console.log("Formatted events:", formattedEvents);
         setEvents(formattedEvents);
       })
-      .catch((error) => console.error('Error fetching events:', error));
+      .catch((error) => console.error("Error fetching events:", error));
   }, []);
-  
+
   const handleDeleteEvent = (id: number) => {
-    axios.delete(`http://localhost:8080/api/events/${id}`)
+    axios
+      .delete(`http://localhost:8080/api/events/${id}`)
       .then(() => {
-        setEvents(events.filter(event => event.id !== id)); // Remove deleted event from state
+        setEvents(events.filter((event) => event.id !== id)); // Remove deleted event from state
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("Error deleting event:", error);
       });
   };
 
   const handleEventUpdateClick = (event: Event) => {
-    navigate(`/EditEvent/${event.id}`);  // Navigate to the edit form with event ID
+    navigate(`/EditEvent/${event.id}`); // Navigate to the edit form with event ID
   };
-  
 
   const handleSelectAllChange = () => {
     if (activeTab === "events") {
       const newSelectAllEvents = !selectAllEvents;
       setSelectAllEvents(newSelectAllEvents);
-      setEvents(events.map(event => ({ ...event, checked: newSelectAllEvents })));
+      setEvents(
+        events.map((event) => ({ ...event, checked: newSelectAllEvents }))
+      );
     } else if (activeTab === "volunteers") {
       const newSelectAllVolunteers = !selectAllVolunteers;
       setSelectAllVolunteers(newSelectAllVolunteers);
-      setVolunteers(volunteers.map(volunteer => ({ ...volunteer, checked: newSelectAllVolunteers })));
+      setVolunteers(
+        volunteers.map((volunteer) => ({
+          ...volunteer,
+          checked: newSelectAllVolunteers,
+        }))
+      );
     }
   };
 
   const handleEventCheckboxChange = (id: number, type: string) => {
     if (type === "event") {
-      setEvents(events.map(event => event.id === id ? { ...event, checked: !event.checked } : event));
+      setEvents(
+        events.map((event) =>
+          event.id === id ? { ...event, checked: !event.checked } : event
+        )
+      );
     } else if (type === "volunteer") {
-      setVolunteers(volunteers.map(volunteer => volunteer.id === id ? { ...volunteer, checked: !volunteer.checked } : volunteer));
+      setVolunteers(
+        volunteers.map((volunteer) =>
+          volunteer.id === id
+            ? { ...volunteer, checked: !volunteer.checked }
+            : volunteer
+        )
+      );
     }
   };
 
   const resetCheckboxes = () => {
     setSelectAllEvents(false);
     setSelectAllVolunteers(false);
-    setEvents(events.map(event => ({ ...event, checked: false })));
-    setVolunteers(volunteers.map(volunteer => ({ ...volunteer, checked: false })));
+    setEvents(events.map((event) => ({ ...event, checked: false })));
+    setVolunteers(
+      volunteers.map((volunteer) => ({ ...volunteer, checked: false }))
+    );
   };
 
   const handleTabChange = (tab: string) => {
     resetCheckboxes();
     setActiveTab(tab);
   };
-  
+
   // Separate handlers for adding event and volunteer
   const handleEventAddClick = () => {
-    navigate('/EventForm');
+    navigate("/EventForm");
   };
 
   const handleVolunteerAddClick = () => {
-    navigate('/VolunteerDetailsForm');
+    navigate("/VolunteerDetailsForm");
   };
 
   return (
@@ -131,13 +165,17 @@ export function AdminDashboard() {
       {/* Navigation Bar */}
       <div className={styles.navbar}>
         <span
-          className={activeTab === "events" ? styles.activeTab : styles.inactiveTab}
+          className={
+            activeTab === "events" ? styles.activeTab : styles.inactiveTab
+          }
           onClick={() => handleTabChange("events")}
         >
           Events
         </span>
         <span
-          className={activeTab === "volunteers" ? styles.activeTab : styles.inactiveTab}
+          className={
+            activeTab === "volunteers" ? styles.activeTab : styles.inactiveTab
+          }
           onClick={() => handleTabChange("volunteers")}
         >
           Volunteers
@@ -146,21 +184,37 @@ export function AdminDashboard() {
 
       {/* Filter and new event/volunteer button */}
       <div className={styles.header}>
-        <button className={styles.filterButton} onClick={() => setShowFilterPopup(true)}>
+        <button
+          className={styles.filterButton}
+          onClick={() => setShowFilterPopup(true)}
+        >
           <FiFilter size={20} />
         </button>
-        <button className={styles.newEventButton} onClick={activeTab === "events" ? handleEventAddClick : handleVolunteerAddClick}>
+        <button
+          className={styles.newEventButton}
+          onClick={
+            activeTab === "events"
+              ? handleEventAddClick
+              : handleVolunteerAddClick
+          }
+        >
           {activeTab === "events" ? "New Event +" : "Add Volunteer +"}
         </button>
       </div>
 
       {/* Filter Popup */}
       {showFilterPopup && (
-        <div className={styles.popupOverlay} onClick={() => setShowFilterPopup(false)}>
+        <div
+          className={styles.popupOverlay}
+          onClick={() => setShowFilterPopup(false)}
+        >
           <div className={styles.popup} onClick={(e) => e.stopPropagation()}>
             <h3>Filter Options</h3>
             <p>Bla Bla Bla filters.</p>
-            <button className={styles.closeButton} onClick={() => setShowFilterPopup(false)}>
+            <button
+              className={styles.closeButton}
+              onClick={() => setShowFilterPopup(false)}
+            >
               Close
             </button>
           </div>
@@ -186,15 +240,23 @@ export function AdminDashboard() {
                   <input
                     type="checkbox"
                     checked={event.checked}
-                    onChange={() => handleEventCheckboxChange(event.id, "event")}
+                    onChange={() =>
+                      handleEventCheckboxChange(event.id, "event")
+                    }
                   />
                 </td>
                 <td>{event.eventName}</td>
                 <td>{event.eventDescription}</td>
                 <td>{event.slotsFilled}</td>
                 <td>
-                  <button onClick={() => handleEventUpdateClick(event)}>Update</button> {/* Update button */}
-                  <button onClick={() => handleDeleteEvent(event.id)}>Delete</button> {/* Delete button */}
+                  <button onClick={() => handleEventUpdateClick(event)}>
+                    Update
+                  </button>{" "}
+                  {/* Update button */}
+                  <button onClick={() => handleDeleteEvent(event.id)}>
+                    Delete
+                  </button>{" "}
+                  {/* Delete button */}
                 </td>
               </tr>
             ))}
@@ -205,7 +267,11 @@ export function AdminDashboard() {
           <thead>
             <tr>
               <th>
-                <input type="checkbox" checked={selectAllVolunteers} onChange={handleSelectAllChange} />
+                <input
+                  type="checkbox"
+                  checked={selectAllVolunteers}
+                  onChange={handleSelectAllChange}
+                />
               </th>
               <th>Volunteer Name</th>
               <th>Preferences</th>
@@ -220,7 +286,9 @@ export function AdminDashboard() {
                   <input
                     type="checkbox"
                     checked={volunteer.checked}
-                    onChange={() => handleEventCheckboxChange(volunteer.id, "volunteer")}
+                    onChange={() =>
+                      handleEventCheckboxChange(volunteer.id, "volunteer")
+                    }
                   />
                 </td>
                 <td>{volunteer.name}</td>

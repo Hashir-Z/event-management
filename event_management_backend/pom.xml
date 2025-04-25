@@ -21,6 +21,7 @@
         <module>common</module>
         <module>user-access-management</module>
         <module>event-management</module>
+        <module>user-history</module>
         <module>mainapplication</module>
     </modules>
 
