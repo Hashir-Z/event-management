@@ -53,36 +53,29 @@
 .statusTag.confirmed{color:green}
 .statusTag.cancelled{color:red}
 
-/*
-.container {
-    padding: 2rem;
-  }
-  
-  .title {
-    font-size: 1.75rem;
-    font-weight: bold;
-    margin-bottom: 1rem;
-  }
-  
-  .tableWrapper {
-    overflow-x: auto;
-  }
-  
-  .table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.95rem;
-  }
-  
-  .table th,
-  .table td {
-    padding: 0.75rem;
-    text-align: left;
-    border-bottom: 1px solid #ccc;
-  }
-  
-  .table th {
-    background-color: #f5f5f5;
-    font-weight: 600;
-  }
-    */
+.columnHeader {
+  flex: items-center gap-1 group;
+  position: relative;
+  cursor: pointer;
+  padding-right: 1rem;
+}
+
+.columnHeader:hover {
+  background-color: #f0f0f0; /* light gray, feel free to adjust */
+}
+
+.chevronIcon {
+  opacity: 0;
+  position: absolute;
+  right: 0.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: opacity 0.2s ease;
+  @apply text-gray-500;
+}
+
+/* Make the chevron visible on hover */
+.columnHeader:hover .chevronIcon {
+  opacity: 1;
+}
+

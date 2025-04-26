@@ -1,5 +1,6 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
+import { ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react';
 import axios from 'axios';
 
 import styles from './VolunteerHistory.module.css';
@@ -22,6 +23,10 @@ export const VolunteerHistory = () => {
   const [volunteerHistory, setVolunteerHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [sortColumn, setSortColumn] = useState<string | null>(null);
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
 
   useEffect(() => {
@@ -38,6 +43,100 @@ export const VolunteerHistory = () => {
     fetchHistory();
   }, []);
 
+  /*
+  useEffect(()=>{
+        //putting filteredOrders in this might cause a logic error
+        setTotalPages(Math.ceil(filteredOrders.length / selectedItemsPerPage));
+        setPaginatedOrders(filteredOrders.slice(
+            (currentPage-1) * selectedItemsPerPage,
+            currentPage * selectedItemsPerPage
+        ));
+    },[selectedItemsPerPage, currentPage])
+
+  */
+
+  const urgencyOrder = {
+    High: 3,
+    Medium: 2,
+    Low: 1
+  };
+
+  const columns = [
+    { key: 'volunteerName', label: 'Volunteer Name' },
+    { key: 'eventName', label: 'Event Name' },
+    { key: 'eventDescription', label: 'Event Description' },
+    { key: 'eventLocation', label: 'Event Location' },
+    { key: 'requiredSkills', label: 'Required Skills' },
+    { key: 'urgency', label: 'Urgency' },
+    { key: 'eventDate', label: 'Event Date' },
+    { key: 'status', label: 'Status' },
+  ];
+  
+
+  const handleSort = (column: string) => {
+    if (sortColumn === column) {
+      if (sortDirection === 'asc') {
+        setSortDirection('desc');
+      } else if (sortDirection === 'desc') {
+        setSortColumn(null); // remove sorting
+        setSortDirection('asc');
+      }
+    } else {
+      setSortColumn(column);
+      setSortDirection('asc');
+    }
+  };
+
+
+/*
+  const handleItemsPerPageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setItemsPerPage(Number(event.target.value)); // Update the items per page dynamically
+    setCurrentPage(1); // Reset to first page when items per page changes
+  };
+  */
+
+  
+
+const getSortedData = () => {
+  if (!sortColumn) return volunteerHistory;
+
+  return [...volunteerHistory].sort((a, b) => {
+    const aValue = a[sortColumn];
+    const bValue = b[sortColumn];
+
+    // Sort urgency levels manually
+    if (sortColumn === 'urgency') {
+      const urgencyRank = { 'High': 3, 'Medium': 2, 'Low': 1 };
+      return sortDirection === 'asc'
+        ? urgencyRank[aValue] - urgencyRank[bValue]
+        : urgencyRank[bValue] - urgencyRank[aValue];
+    }
+
+    // Dates
+    if (sortColumn === 'eventDate') {
+      return sortDirection === 'asc'
+        ? new Date(aValue).getTime() - new Date(bValue).getTime()
+        : new Date(bValue).getTime() - new Date(aValue).getTime();
+    }
+
+    // Default: string comparison
+    return sortDirection === 'asc'
+      ? String(aValue).localeCompare(String(bValue))
+      : String(bValue).localeCompare(String(aValue));
+  });
+};
+
+
+const ChevronIcon = ({ column }: { column: string }) => {
+  if (sortColumn !== column) {
+    return <ChevronsUpDown className="chevron hidden group-hover:inline" size={16} />;
+  }
+  return sortDirection === 'asc' ? (
+    <ChevronUp className={styles.chevronIcon} size={16} />
+  ) : (
+    <ChevronDown className={styles.chevronIcon} size={16} />
+  );
+};
 
 
 
@@ -46,122 +145,42 @@ export const VolunteerHistory = () => {
       <div className={styles.title}> Volunteer History </div>
       <div className={styles.VolunteerHisDisContainer}> 
         <table>
-          <thead className={styles.VolunteerHistoryInfo}>
-            <tr>
-            <th>Volunteer Name</th>
-            <th>Event Name</th>
-            <th>Event Description</th>
-            <th>Event Location</th>
-            <th>Required Skills</th>
-            <th>Urgency</th>
-            <th>Event Date</th>
-            <th>Status</th>
-            </tr>
-          </thead>
+        <thead className={styles.VolunteerHistoryInfo}>
+  <tr className={styles.columnHeader}>
+    {columns.map((column) => (
+      <th key={column.key} onClick={() => handleSort(column.key)} className={styles.columnHeader} style={{ cursor: 'pointer' }}>
+        {column.label}
+        {sortColumn === column.key && (
+          sortDirection === 'asc' ? <ChevronUp size={16} /> : <ChevronDown size={16} />
+        )}
+      </th>
+    ))}
+  </tr>
+</thead>
           <tbody className ={styles.VolunteerHistoryTableBody}>
-          {volunteerHistory.map((history) => (
-            <tr key={`${history['eventId']}-${history['volunteerName']}`}> {/* Using composite key */}
-              <td>{history['volunteerName']}</td>
-              <td>{history['eventName']}</td>
-              <td>{history['eventDescription']}</td>
-              <td>{history['eventLocation']}</td>
-              <td>{history['requiredSkills']}</td>
-              <td>{history['urgency']}</td>
-              <td>{new Date(history['eventDate']).toLocaleString()}</td>
-              <td className={styles.statusTag}>{history['status']}</td>
-            </tr>
-          ))}
+          {getSortedData().map((history) => (
+          <tr key={`${history['eventId']}-${history['volunteerName']}`}>
+          <td>{history['volunteerName']}</td>
+          <td>{history['eventName']}</td>
+          <td>{history['eventDescription']}</td>
+          <td>{history['eventLocation']}</td>
+          <td>{history['requiredSkills']}</td>
+          <td>{history['urgency']}</td>
+          <td>{new Date(history['eventDate']).toLocaleString()}</td>
+          <td className={styles.statusTag}>{history['status']}</td>
+        </tr>
+      ))}
           </tbody>
           <tfoot>
 
           </tfoot>
         </table>
       </div>
-  
     </div>);
 }
 
 export default VolunteerHistory; 
 
-/*
-// VolunteerHistory.tsx
-import React, { useState } from 'react';
-import styles from './VolunteerHistory.module.css';
 
-// 1. Define type for event
-interface Event {
-  eventID: number;
-  eventName: string;
-  eventDescription: string;
-  location: string;
-  requiredSkills: string[];
-  urgency: string;
-  eventDate: string;
-}
 
-// 2. Component
-export function VolunteerHistory() {
-  const [events, setEvents] = useState<Event[]>([
-    {
-      eventID: 1,
-      eventName: "Event1",
-      eventDescription: "Description1",
-      location: "Location1",
-      requiredSkills: ["Skill1", "Skill2", "Skill3"],
-      urgency: "High",
-      eventDate: "2025-04-20",
-    },
-    {
-      eventID: 2,
-      eventName: "Event2",
-      eventDescription: "Description2",
-      location: "Location2",
-      requiredSkills: ["Skill1", "Skill2"],
-      urgency: "Medium",
-      eventDate: "2025-05-10",
-    },
-    {
-      eventID: 3,
-      eventName: "Event3",
-      eventDescription: "Description3",
-      location: "Location3",
-      requiredSkills: ["Skill1"],
-      urgency: "Low",
-      eventDate: "2025-06-01",
-    },
-  ]);
 
-  return (
-    <div className={styles.container}>
-      <h2 className={styles.title}>Volunteer History</h2>
-
-      <div className={styles.tableWrapper}>
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>Event Name</th>
-              <th>Description</th>
-              <th>Location</th>
-              <th>Required Skills</th>
-              <th>Urgency</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {events.map((event) => (
-              <tr key={event.eventID}>
-                <td>{event.eventName}</td>
-                <td>{event.eventDescription}</td>
-                <td>{event.location}</td>
-                <td>{event.requiredSkills.join(", ")}</td>
-                <td>{event.urgency}</td>
-                <td>{event.eventDate}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-}
-  */
