@@ -21,6 +21,7 @@
         <module>user-access-management</module>
         <module>event-management</module>
         <module>mainapplication</module>
+        <module>entities</module>
     </modules>
 
     <properties>
